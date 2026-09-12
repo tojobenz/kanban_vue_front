@@ -25,4 +25,9 @@ module.exports = function(app) {
     [authJwt.verifyToken, authJwt.isAdmin],
     controller.adminBoard
   );
+
+  app.post("/api/user/collaborators", [authJwt.verifyToken], controller.addCollaborator);
+  app.get("/api/user/collaborators", [authJwt.verifyToken], controller.getCollaborators);
+  app.get("/api/user/inviters", [authJwt.verifyToken], controller.getInviters);
+  app.delete("/api/user/collaborators/:collaboratorId", [authJwt.verifyToken], controller.removeCollaborator);
 };

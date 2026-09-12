@@ -1,53 +1,73 @@
 <template>
-  <div class="col list-width">
-    <div class="heading" :style="{ backgroundColor: this.list.headerColor }">
+  <div class="flex-shrink-0 w-80 bg-slate-100 rounded-2xl shadow-lg overflow-hidden border border-slate-200">
+    <!-- Column Header -->
+    <div class="p-4" :style="{ backgroundColor: this.list.headerColor || '#4f46e5' }">
       <div v-show="!isUpdate">
-        <h4 class="text-center">
-          <span @click="showForm">{{ this.list.name }}</span
-          ><font-awesome-icon icon="filter" style="width:20px; height:20px; margin-left: 20px" @click="filterCard" />
-          <span class="croix"
-            ><font-awesome-icon icon="times" @click="deleteCard()"
-          /></span>
-        </h4>
-      </div>
-      <div v-show="isUpdate">
-        <div class="input-group mb-3">
-          <input type="text" class="form-control" v-model="title" />
-          <div class="input-group-append">
+        <div class="flex items-center justify-between">
+          <h4 class="text-white font-bold text-lg cursor-pointer hover:text-indigo-100 transition-colors drop-shadow-sm" @click="showForm">
+            {{ this.list.name }}
+          </h4>
+          <div class="flex items-center space-x-2">
             <button
-              class="btn btn-primary"
-              type="button"
-              @click.prevent="updateCa"
+              @click="filterCard"
+              class="bg-white/20 hover:bg-white/30 text-white transition-all py-3 px-4 rounded-xl border border-white/20 shadow-md hover:shadow-lg"
+              title="Trier les cartes"
             >
-              Modifier
+              <font-awesome-icon icon="filter" style="width:18px; height:18px;" />
+            </button>
+            <button
+              @click="deleteCard()"
+              class="bg-rose-500/80 hover:bg-rose-600 text-white transition-all py-3 px-4 rounded-xl border border-rose-400/40 shadow-md hover:shadow-lg"
+              title="Supprimer la colonne"
+            >
+              <font-awesome-icon icon="times" style="width:18px; height:18px;" />
             </button>
           </div>
         </div>
       </div>
+      <div v-show="isUpdate">
+        <div class="flex space-x-2">
+          <input 
+            type="text" 
+            class="flex-1 border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400 text-gray-800" 
+            v-model="title" 
+            placeholder="Nom de la colonne"
+          />
+          <button
+            class="bg-white text-indigo-700 font-bold px-4 py-2 rounded-xl text-sm hover:bg-indigo-50 transition-all shadow-sm"
+            type="button"
+            @click.prevent="updateCa"
+          >
+            Modifier
+          </button>
+        </div>
+      </div>
     </div>
-    <div class="cards cards-list" :data-type="this.list.name">
+    
+    <!-- Cards Container -->
+    <div class="p-3 min-h-96 max-h-screen overflow-y-auto bg-gray-50" :data-type="this.list.name">
       <draggable
-        :list="this.list.items"
+        :list="list.items"
         :handle="shouldUseDragHandle"
         :disabled="isEditing"
-        :key="key"
         group="kanban"
-        @start="drag = true"
-        @end="drag = false"
-        :move="DragChange"
+        @change="onDragChange"
+        class="space-y-3"
       >
         <CardEdit
           v-for="item in this.list.items"
           :item="item"
           :key="item.id"
+          :availableCards="availableCards"
           @item-edited="itemEdited"
           @item-cancelled="itemCancelled"
           @item-editing="itemEditing"
           @item-deleted="itemDeleted"
+          @refresh-board="refreshBoard"
         ></CardEdit>
       </draggable>
       <CardNew
-        class="fixed-card"
+        class="mt-3"
         :item="defaultItem"
         :index="this.index"
         :name="this.list.name"
@@ -72,14 +92,16 @@ export default {
     CardEdit,
     Draggable,
   },
-  props: ["list", "titre", "description", "index"],
+  props: ["list", "titre", "description", "index", "allLists"],
 
   data() {
     return {
       isEditing: false,
-      key: "",
       isUpdate: false,
       title: this.list.name,
+      deviceIsMobile: false,
+      deviceIsDesktop: true,
+      deviceIsTablet: false
     };
   },
 
@@ -94,25 +116,47 @@ export default {
       };
     },
     shouldUseDragHandle() {
-      return this.isDesktop ? "" : ".drag-handle";
+      return this.deviceIsDesktop ? "" : ".drag-handle";
     },
+    availableCards() {
+      if (this.allLists && this.allLists.length > 0) {
+        return this.allLists.map(list => list.name);
+      }
+      return [this.list.name];
+    },
+  },
+  created() {
+    this.detectDevice();
+    window.addEventListener('resize', this.detectDevice);
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.detectDevice);
   },
 
   methods: {
-    //Drag d'item vers une autre carte
-    DragChange(evt) {
-      let id = evt.draggedContext.element.id;
-      let value = {
-        actif: false,
-        card: evt.to.parentElement.dataset.type,
-      };
+    detectDevice() {
+      const width = window.innerWidth;
+      this.deviceIsMobile = width < 768;
+      this.deviceIsTablet = width >= 768 && width < 1024;
+      this.deviceIsDesktop = width >= 1024;
+    },
+    // Persist when a task is dropped into this column
+    onDragChange(evt) {
+      if (!evt.added) return;
 
-      TaskService.editTask(id, value).then(
-        (response) => {
-          console.log(response);
-        },
+      const draggedElement = evt.added.element;
+      if (!draggedElement || !draggedElement.id) {
+        console.error("Impossible de trouver l'élément déplacé");
+        return;
+      }
+
+      const newCard = this.list.name;
+      draggedElement.card = newCard;
+
+      TaskService.editTask(draggedElement.id, { card: newCard }).then(
+        () => {},
         (error) => {
-          console.log(error);
+          console.error("Erreur lors du déplacement:", error);
         }
       );
     },
@@ -124,10 +168,35 @@ export default {
     },
     itemEdited(item) {
       const itm = this.list.items.find((t) => t.id == item.id);
-      itm.list = item.list;
-      itm.titre = item.titre;
-      itm.description = item.description;
-      itm.actif = item.actif;
+      if (itm) {
+        itm.titre = item.titre;
+        itm.description = item.description;
+        itm.actif = item.actif;
+        itm.card = item.card;
+      }
+
+      // Move card to another column immediately in the UI
+      if (item.card !== this.list.name) {
+        this.list.items = this.list.items.filter((t) => t.id !== item.id);
+        const targetList = (this.allLists || []).find((l) => l.name === item.card);
+        if (targetList) {
+          if (!Array.isArray(targetList.items)) {
+            this.$set(targetList, "items", []);
+          }
+          const alreadyThere = targetList.items.some((t) => t.id === item.id);
+          if (!alreadyThere) {
+            targetList.items.push({
+              id: item.id,
+              titre: item.titre,
+              description: item.description,
+              actif: item.actif,
+              card: item.card,
+              date: itm ? itm.date : item.date,
+              utilisateur: itm ? itm.utilisateur : item.utilisateur,
+            });
+          }
+        }
+      }
 
       this.isEditing = false;
     },
@@ -210,44 +279,19 @@ export default {
     filterCard() {
 this.list.items.sort().reverse();
 return this.list.items
+    },
+    manageCollaborators() {
+      // Naviguer vers la page des collaborateurs pour ce kanban
+      if (this.list.id || this.list._id) {
+        this.$router.push(`/kanban/${this.list.id || this.list._id}/collaborators`);
+      }
+    },
+    refreshBoard() {
+      this.$emit('refresh-board');
     }
   },
 };
 </script>
 
 <style>
-.col-3 {
-  padding: 0 !important;
-  margin: 0 15px;
-}
-.heading {
-  padding: 10px 10px;
-  color: #fff;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-}
-
-.cards-list {
-  min-height: 300px;
-  height: 100vh;
-  overflow: scroll;
-  box-shadow: 1px 1px 1px 0px rgba(158, 158, 158, 0.25);
-  background-color: rgba(223, 238, 242, 0.4);
-}
-
-.fixed-card {
-  color: #ccc;
-  border: 1px dotted #ccc;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-}
-
-.list-width {
-  min-width: 10%;
-  max-width: 10%;
-  border-radius: 10px;
-}
-.croix {
-  float: right;
-}
 </style>

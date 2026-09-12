@@ -4,6 +4,15 @@ module.exports = mongoose => {
       name: String,
       headerColor: String,
       items: Array,
+      owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+      },
+      collaborators: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      }]
     },
     { timestamps: true }
   );

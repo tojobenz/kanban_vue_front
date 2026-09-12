@@ -4,6 +4,7 @@ import Home from './views/Home.vue';
 import Login from './views/Login.vue';
 import Register from './views/Register.vue';
 import Historic from './views/Historic.vue';
+import Collaborators from './views/Collaborators.vue';
 
 Vue.use(Router);
 
@@ -17,6 +18,10 @@ export const router = new Router({
     },
     {
       path: '/home',
+      component: Home
+    },
+    {
+      path: '/home/:id',
       component: Home
     },
     {
@@ -36,6 +41,27 @@ export const router = new Router({
     {
       path: '/historic',
       component: Historic
+    },
+    {
+      path: '/kanban/:id',
+      name: 'kanban-detail',
+      component: Home,
+      props: true
+    },
+    {
+      path: '/kanban/create',
+      name: 'kanban-create',
+      component: Home
+    },
+    {
+      path: '/kanban/:id/collaborators',
+      name: 'collaborators',
+      component: Collaborators
+    },
+    {
+      path: '/home/:id/collaborators',
+      name: 'home-collaborators',
+      component: Collaborators
     },
   ]
 });

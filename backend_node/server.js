@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 const dbConfig = require("./app/config/db.config");
@@ -20,7 +21,7 @@ const db = require("./app/models");
 const Role = db.role;
 
 db.mongoose
-  .connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
+  .connect(dbConfig.URI || `mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
@@ -44,6 +45,7 @@ require("./app/routes/user.routes")(app);
 require("./app/routes/tache.routes")(app);
 require("./app/routes/card.routes")(app);
 require("./app/routes/historic.routes")(app);
+require("./app/routes/kanban.routes")(app);
 // set port, listen for requests
 const PORT = process.env.PORT || 8082;
 app.listen(PORT, () => {

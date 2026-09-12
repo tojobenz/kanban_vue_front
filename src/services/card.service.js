@@ -5,8 +5,9 @@ const API_URL = 'http://localhost:8082/api/cards/';
 
 class CardService {
 
-  getAllCards() {
-    return axios.get(API_URL + '', { headers: authHeader() });
+  getAllCards(ownerId) {
+    const url = ownerId ? `${API_URL}?owner=${ownerId}` : API_URL;
+    return axios.get(url, { headers: authHeader() });
   }
 
   getOneCard(id) {

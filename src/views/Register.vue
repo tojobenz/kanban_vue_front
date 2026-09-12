@@ -1,68 +1,91 @@
 <template>
-  <div class="col-md-12">
-    <div class="card card-container">
-      <img
-        id="profile-img"
-        src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-        class="profile-img-card"
-      />
-      <form name="form" @submit.prevent="handleRegister">
+  <div class="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center px-4">
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+      <div class="text-center mb-8">
+        <img
+          src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
+          class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-indigo-200"
+          alt="Profile"
+        />
+        <h2 class="text-3xl font-bold text-gray-800">Créer un compte</h2>
+        <p class="text-gray-600 mt-2">Rejoignez votre tableau Kanban</p>
+      </div>
+      
+      <form name="form" @submit.prevent="handleRegister" class="space-y-6">
         <div v-if="!successful">
-          <div class="form-group">
-            <label for="username" class="txtc">Username</label>
+          <div>
+            <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Nom d'utilisateur</label>
             <input
               v-model="user.username"
               v-validate="'required|min:3|max:20'"
               type="text"
-              class="form-control inp"
+              class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors placeholder-gray-400 placeholder-opacity-70"
               name="username"
+              placeholder="votre_nom"
             />
             <div
               v-if="submitted && errors.has('username')"
-              class="alert-danger"
+              class="mt-2 text-sm text-red-600 bg-red-50 p-2 rounded"
             >{{errors.first('username')}}</div>
           </div>
-          <div class="form-group">
-            <label for="email" class="txtc">Email</label>
+          
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
             <input
               v-model="user.email"
               v-validate="'required|email|max:50'"
               type="email"
-              class="form-control inp"
+              class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors placeholder-gray-400 placeholder-opacity-70"
               name="email"
+              placeholder="votre@email.com"
             />
             <div
               v-if="submitted && errors.has('email')"
-              class="alert-danger"
+              class="mt-2 text-sm text-red-600 bg-red-50 p-2 rounded"
             >{{errors.first('email')}}</div>
           </div>
-          <div class="form-group">
-            <label for="password" class="txtc">Password</label>
+          
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
             <input
               v-model="user.password"
               v-validate="'required|min:6|max:40'"
               type="password"
-              class="form-control inp"
+              class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors placeholder-gray-400 placeholder-opacity-70"
               name="password"
+              placeholder="••••••••"
             />
             <div
               v-if="submitted && errors.has('password')"
-              class="alert-danger"
+              class="mt-2 text-sm text-red-600 bg-red-50 p-2 rounded"
             >{{errors.first('password')}}</div>
           </div>
-          <div class="form-group mt-3 mb-3">
-            <button class="btn btn-primary btn-block btnd">Enregister</button>
+          
+          <div>
+            <button 
+              type="submit"
+              class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-base border border-indigo-500/20"
+            >
+              S'inscrire
+            </button>
           </div>
         </div>
-           <div class="form-group">
-          <div @click="login"><a href="">Se connecter</a></div>
+        
+        <div class="text-center">
+          <button 
+            type="button"
+            @click="login" 
+            class="text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
+          >
+            Se connecter
+          </button>
         </div>
       </form>
 
       <div
         v-if="message"
-        class="alert"
-        :class="successful ? 'alert-success' : 'alert-danger'"
+        class="mt-4 p-3 rounded-lg text-sm"
+        :class="successful ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'"
       >{{message}}</div>
     </div>
   </div>
@@ -120,48 +143,5 @@ export default {
 };
 </script>
 
-<style scoped>label {
-  display: block;
-  margin-top: 10px;
-}
-
-.card-container.card {
-  max-width: 350px !important;
-  padding: 40px 40px;
-  border-radius: 15px;
-}
-
-.card {
-  background-color: #f7f7f7;
-  padding: 20px 25px 30px;
-  margin: 0 auto 25px;
-  margin-top: 50px;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
-  -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-}
-
-.profile-img-card {
-  width: 96px;
-  height: 96px;
-  margin: 0 auto 10px;
-  display: block;
-  -moz-border-radius: 50%;
-  -webkit-border-radius: 50%;
-  border-radius: 50%;
-}
-.btnd {
-  width: 100%;
-  background-color: rgb(101, 60, 248);
-}
-.txtc {
-  color: rgb(101, 60, 248);
-  font-weight: 600;
-}
-.inp {
-  border: rgb(145, 122, 231) 1px solid;
-}
+<style scoped>
 </style>

@@ -1,45 +1,64 @@
 <template>
-  <div class="card" v-if="!isFormShowing" @click.prevent="handleNew">
-    <div class="card-body">
-      <!-- New Item Link Markup Start -->
-      <div class="text-center text-dark">
-        <span>
-          <svg style="width:15px;height:15px" viewBox="0 0 24 24">
-            <path fill="#000000" d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"></path>
-          </svg>
-          <strong>Nouveau tâche</strong>
-        </span>
+  <div 
+    class="bg-white rounded-lg shadow-sm border-2 border-dashed border-gray-300 p-4 cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 transition-all" 
+    v-if="!isFormShowing" 
+    @click.prevent="handleNew"
+  >
+    <div class="text-center text-gray-500 hover:text-indigo-600 transition-colors">
+      <div class="flex items-center justify-center space-x-2">
+        <font-awesome-icon icon="plus" class="text-lg" />
+        <span class="font-medium">Nouvelle tâche</span>
       </div>
     </div>
   </div>
-  <div class="card" v-else>
-    <div class="card-body">
-      <!-- Item Display Markup End -->
-      <!-- Form Markup Start -->
-      <div class="form">
-               <div class="form-group row mb-3 mt-3">
-    <label for="staticEmail" class="col-sm-3 col-form-label">Titre</label>
-    <div class="col-sm-9">
-<input type="text" class="form-control" v-model="form.titre">   </div>
-  </div>
   
-  <div class="form-group row mb-3 mt-3">
-    <label for="staticEmail" class="col-sm-3 col-form-label">Status</label>
-    <div class="col-sm-9">
-<select class="form-control" id="exampleFormControlSelect1" v-model="form.status">
-      <option :value="false">En cours</option>
-      <option :value="true">Terminée</option>
-    </select>    </div>
-  </div>
-        <div class="form-group mb-3">
-          <textarea rows="3" class="form-control" v-model="form.description"></textarea>
-        </div>
-        <div class="form-group text-center">
-          <button class="btn btn-outline-primary btn-sm mr-2" @click.prevent="save">Sauvegarder</button>
-          <button class="btn btn-outline-secondary btn-sm mr-3" @click.prevent="cancel">Annuler</button>
-        </div>
+  <div class="bg-white rounded-lg shadow-md border border-gray-200 p-4" v-else>
+    <div class="space-y-3">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Titre</label>
+        <input 
+          type="text" 
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400 placeholder-opacity-70" 
+          v-model="form.titre"
+          placeholder="Titre de la tâche"
+        />
       </div>
-      <!-- Form Markup End -->
+      
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+        <select 
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          v-model="form.status"
+        >
+          <option :value="false">En cours</option>
+          <option :value="true">Terminée</option>
+        </select>
+      </div>
+      
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <textarea 
+          rows="3" 
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400 placeholder-opacity-70" 
+          v-model="form.description"
+          placeholder="Description de la tâche"
+        ></textarea>
+      </div>
+      
+      <div class="flex space-x-3 pt-1">
+        <button 
+          class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all"
+          @click.prevent="save"
+        >
+          Sauvegarder
+        </button>
+        <button 
+          class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all border border-slate-300/60"
+          @click.prevent="cancel"
+        >
+          Annuler
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -128,6 +147,6 @@ var dateTime = date+' '+time;
 };
 </script>
 
-<style scope>
+<style>
 </style>
 
