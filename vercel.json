@@ -15,7 +15,10 @@
       "dest": "/dist/$1"
     }
   ],
-  "env": {
-    "NODE_OPTIONS": "--openssl-legacy-provider"
+  "installCommand": "npm install",
+  "buildCommand": "npx vue-cli-service build",
+  "framework": null,
+  "engines": {
+    "node": "16.x"
   }
 }
