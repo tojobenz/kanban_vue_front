@@ -17,8 +17,5 @@
   ],
   "installCommand": "npm install",
   "buildCommand": "npx vue-cli-service build",
-  "framework": null,
-  "engines": {
-    "node": "16.x"
-  }
+  "framework": null
 }
