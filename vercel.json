@@ -16,6 +16,6 @@
     }
   ],
   "installCommand": "npm install",
-  "buildCommand": "npx vue-cli-service build",
+  "buildCommand": "npx --node-options=--openssl-legacy-provider vue-cli-service build",
   "framework": null
 }
